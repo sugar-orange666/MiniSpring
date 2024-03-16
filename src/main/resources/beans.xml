@@ -2,5 +2,12 @@
 
 
 <beans>
-    <bean id="aservice" class="com.minis.test.AServiceImpl"></bean>
+    <bean id="aservice" class="com.minis.test.AServiceImpl">
+        <!--     setter方法注入属性的值   类型，属性名称，赋值-->
+        <property type="String" name="property1" value="Someone says"/>
+        <property type="String" name="property2" value="Hello World!"/>
+        <constructor-arg type="String" name="name" value="abc"/>
+        <constructor-arg type="int" name="level" value="3"/>
+
+    </bean>
 </beans>
