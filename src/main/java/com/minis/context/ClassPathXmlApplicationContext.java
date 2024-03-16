@@ -2,6 +2,7 @@ package com.minis.context;
 
 import com.minis.beans.BeanDefinition;
 import com.minis.beans.BeanFactory;
+import com.minis.beans.BeansException;
 import com.minis.beans.SimpleBeanFactory;
 import com.minis.beans.XmlBeanDefinitionReader;
 import com.minis.core.ClassPathXmlResource;
@@ -17,23 +18,23 @@ import com.minis.core.Resource;
  */
 public class ClassPathXmlApplicationContext {
 
-    BeanFactory beanFactory;
+    SimpleBeanFactory simpleBeanFactory;
 
     public ClassPathXmlApplicationContext(String fileName) {
         Resource resource = new ClassPathXmlResource(fileName);
-        beanFactory = new SimpleBeanFactory();
-        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        simpleBeanFactory = new SimpleBeanFactory();
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(simpleBeanFactory);
         reader.loadBeanDefinitions(resource);
     }
 
 
-    public Object getBean(String beanName) {
-        return beanFactory.getBean(beanName);
+    public Object getBean(String beanName) throws BeansException {
+        return simpleBeanFactory.getBean(beanName);
     }
 
 
     public void registerBeanDefinition(BeanDefinition beanDefinition) {
-        beanFactory.registerBean(beanDefinition.getId(),beanDefinition);
+        simpleBeanFactory.registerBean(beanDefinition.getId(), beanDefinition);
     }
 
 }
