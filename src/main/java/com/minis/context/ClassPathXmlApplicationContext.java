@@ -16,7 +16,7 @@ import com.minis.core.Resource;
  * @Date：2024/3/12 19:02
  * @Description
  */
-public class ClassPathXmlApplicationContext {
+public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationEventPublisher {
 
     SimpleBeanFactory simpleBeanFactory;
 
@@ -37,10 +37,27 @@ public class ClassPathXmlApplicationContext {
         simpleBeanFactory.registerBean(beanDefinition.getId(), beanDefinition);
     }
 
-    public Boolean containsBean(String name) {
+    public boolean containsBean(String name) {
         return simpleBeanFactory.containsBean(name);
     }
+
     public void registerBean(String beanName, Object obj) {
         simpleBeanFactory.registerBean(beanName, obj);
+    }
+
+
+    public void publishEvent(ApplicationEvent event) {
+    }
+
+    public boolean isSingleton(String name) {
+        return false;
+    }
+
+    public boolean isPrototype(String name) {
+        return false;
+    }
+
+    public Class getType(String name) {
+        return null;
     }
 }

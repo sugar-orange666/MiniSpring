@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date：2024/3/16 10:13
  * @Description
  */
-public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
+public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory ,BeanDefinitionRegistry{
 
 
     private List<BeanDefinition> beanDefinitions = new ArrayList<>();
@@ -56,7 +56,46 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
     }
 
 
-    public void registerBeanDefinition(BeanDefinition beanDefinition) {
+    public void registerBeanDefinition(String name,BeanDefinition beanDefinition) {
         this.beanDefinitionMap.put(beanDefinition.getId(), beanDefinition);
+        beanNames.add(name);
+        try {
+            if (beanDefinition.isLazyInit()) {
+                getBean(name);
+            }
+        } catch (BeansException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+    public void removeBeanDefinition(String name) {
+        this.beanDefinitionMap.remove(name);
+        this.beanNames.remove(name);
+        this.removeBeanDefinition(name);
+    }
+
+    public BeanDefinition getBeanDefinition(String name) {
+        return this.beanDefinitionMap.get(name);
+    }
+
+    public boolean containsBeanDefinition(String name) {
+        return this.beanDefinitionMap.containsKey(name);
+    }
+
+    @Override
+    public boolean isSingleton(String name) {
+        return beanDefinitionMap.get(name).isSingleton();
+    }
+
+    @Override
+    public boolean isPrototype(String name) {
+        return beanDefinitionMap.get(name).isPrototype();
+    }
+
+    @Override
+    public Class<?> getType(String name) {
+        return beanDefinitionMap.get(name).getClass();
     }
 }
