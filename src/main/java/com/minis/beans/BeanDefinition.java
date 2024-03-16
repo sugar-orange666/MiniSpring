@@ -1,4 +1,4 @@
-package com.minis;
+package com.minis.beans;
 
 /**
  * @Date：2024/3/12 19:01
