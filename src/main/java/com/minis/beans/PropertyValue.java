@@ -24,4 +24,9 @@ public class PropertyValue {
     public Object getValue() {
         return value;
     }
+
+    public String getType() {
+        return type;
+    }
+
 }

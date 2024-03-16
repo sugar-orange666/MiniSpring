@@ -5,7 +5,7 @@ package com.minis.beans;
  * @Description
  */
 public interface BeanFactory {
-    Object getBean(String beanName) throws BeansException;
+    Object getBean(String beanName) throws Exception;
 
     void registerBean(String beanName, Object obj);
 

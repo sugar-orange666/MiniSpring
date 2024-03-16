@@ -28,7 +28,7 @@ public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationE
     }
 
 
-    public Object getBean(String beanName) throws BeansException {
+    public Object getBean(String beanName) throws Exception {
         return simpleBeanFactory.getBean(beanName);
     }
 

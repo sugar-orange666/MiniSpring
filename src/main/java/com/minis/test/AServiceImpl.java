@@ -10,6 +10,7 @@ public class AServiceImpl implements AService {
     public AServiceImpl() {
     }
 
+
     private String property1;
     private String property2;
 
