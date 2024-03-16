@@ -50,9 +50,9 @@ public class SimpleBeanFactory implements BeanFactory {
     }
 
     @Override
-    public void registerBeanDefinition(BeanDefinition beanDefinition) {
-        beanDefinitions.add(beanDefinition);
-        beanNames.add(beanDefinition.getId());
+    public void registerBean(String beanName, Object obj) {
+        beanDefinitions.add((BeanDefinition) obj);
+        beanNames.add(beanName);
 
     }
 }

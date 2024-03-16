@@ -33,7 +33,7 @@ public class ClassPathXmlApplicationContext {
 
 
     public void registerBeanDefinition(BeanDefinition beanDefinition) {
-        beanFactory.registerBeanDefinition(beanDefinition);
+        beanFactory.registerBean(beanDefinition.getId(),beanDefinition);
     }
 
 }
