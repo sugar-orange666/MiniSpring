@@ -37,4 +37,10 @@ public class ClassPathXmlApplicationContext {
         simpleBeanFactory.registerBean(beanDefinition.getId(), beanDefinition);
     }
 
+    public Boolean containsBean(String name) {
+        return simpleBeanFactory.containsBean(name);
+    }
+    public void registerBean(String beanName, Object obj) {
+        simpleBeanFactory.registerBean(beanName, obj);
+    }
 }
