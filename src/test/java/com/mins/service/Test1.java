@@ -1,6 +1,7 @@
 package com.mins.service;
 
-import com.minis.ClassPathXmlApplicationContext;
+import com.minis.beans.BeansException;
+import com.minis.context.ClassPathXmlApplicationContext;
 import com.minis.test.AService;
 
 /**
@@ -10,9 +11,9 @@ import com.minis.test.AService;
 public class Test1 {
 
 
-    public static void main(String[] args) {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
-        AService aService = (AService) ctx.getObjects("aservice");
+    public static void main(String[] args) throws Exception {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml", true);
+        AService aService = (AService) ctx.getBean("aservice");
         aService.sayHello();
     }
 }
