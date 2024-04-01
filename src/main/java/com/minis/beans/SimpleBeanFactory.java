@@ -1,6 +1,7 @@
 package com.minis.beans;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,11 +18,25 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
 
 
     private List<BeanDefinition> beanDefinitions = new ArrayList<>();
-    private List<String> beanNames = new ArrayList<>();
+    private List<String> beanDefinitionNames = new ArrayList<>();
 
     private Map<String, Object> singletons = new HashMap<>();
 
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    //二级缓存，存储半成品对象
+    private final Map<String, Object> earlySingletonObjects = new HashMap<String, Object>(16);
+
+    //所有的bean都创建一遍
+
+    public void refresh() {
+        for (String beanName : beanDefinitionNames) {
+            try {
+                getBean(beanName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     //getBean容器的核心方法
     @Override
@@ -30,19 +45,17 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
 
         Object singleton = getSingleton(beanName);
         if (singleton == null) {
-            BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-            if (beanDefinition == null) {
-                throw new BeansException("No bean.");
-            }
-            try {
-//                singleton = Class.forName(beanDefinition.getClassName()).newInstance();
+            singleton = earlySingletonObjects.get(beanName);
+            if (singleton == null) {
+                BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
                 singleton = createBean(beanDefinition);
                 registerSingleton(beanName, singleton);
-            } catch (Exception e) {
-                throw new Exception(e.getMessage());
             }
         }
 
+        if (singleton == null) {
+            throw new BeansException("bean is null.");
+        }
         return singleton;
     }
 
@@ -104,10 +117,25 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
 
     private Object createBean(BeanDefinition beanDefinition) throws BeansException {
         Class<?> clz = null;
+
+        Object obj = doCreateBean(beanDefinition);
+        earlySingletonObjects.put(beanDefinition.getId(), obj);
+        try {
+            clz = Class.forName(beanDefinition.getClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        handleProperties(beanDefinition, clz, obj);
+        return obj;
+
+    }
+
+
+    private Object doCreateBean(BeanDefinition beanDefinition) throws BeansException {
         Object obj = null;
+        Class<?> clz = null;
         Constructor<?> con = null;
-
-
         try {
             clz = Class.forName(beanDefinition.getClassName());
             ArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
@@ -144,28 +172,47 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                 obj = clz.newInstance();
             }
 
-            PropertyValues propertyValues = beanDefinition.getPropertyValues();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BeansException(e.getMessage());
+        }
+        return obj;
+
+    }
+
+    private void handleProperties(BeanDefinition bd, Class<?> clz, Object obj) {
+
+        try {
+            PropertyValues propertyValues = bd.getPropertyValues();
             if (!propertyValues.isEmpty()) {
                 for (int i = 0; i < propertyValues.size(); i++) {
                     PropertyValue propertyValue = propertyValues.getPropertyValueList().get(i);
-
                     String pType = propertyValue.getType();
                     String pName = propertyValue.getName();
                     Object pValue = propertyValue.getValue();
+                    boolean isRef = propertyValue.getIsRef();
                     Class[] paramTypes = new Class[1];
-
-                    if (pType.equals("String") || pType.equals("java.lang.String")) {
-                        paramTypes[0] = String.class;
-                    } else if (pType.equals("Integer") || pType.equals("java.lang.Integer")) {
-                        paramTypes[0] = Integer.class;
-                    } else if (pType.equals("int")) {
-                        paramTypes[0] = int.class;
-                    } else {
-                        paramTypes[0] = String.class;
-                    }
-
                     Object[] paramValues = new Object[1];
-                    paramValues[0] = pValue;
+
+                    if (!isRef) {
+                        if (pType.equals("String") || pType.equals("java.lang.String")) {
+                            paramTypes[0] = String.class;
+                        } else if (pType.equals("Integer") || pType.equals("java.lang.Integer")) {
+                            paramTypes[0] = Integer.class;
+                        } else if (pType.equals("int")) {
+                            paramTypes[0] = int.class;
+                        } else {
+                            paramTypes[0] = String.class;
+                        }
+
+                        paramValues[0] = pValue;
+
+
+                    } else {
+                        paramTypes[0] = Class.forName(pType);
+                        paramValues[0] = getBean((String) pValue);
+                    }
 
                     //按照setXxxx规范查找setter方法，调用setter方法设置属性
                     String methodName = "set" + pName.substring(0, 1).toUpperCase() + pName.substring(1);
@@ -173,16 +220,12 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                     method.invoke(obj, paramValues);
 
                 }
-            } else {
 
             }
-
-
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new BeansException(e.getMessage());
+            throw new RuntimeException(e);
         }
-        return obj;
+
 
     }
 }

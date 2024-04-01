@@ -1,5 +1,7 @@
 package com.minis.beans;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class PropertyValues {
 
 
     public void addPropertyValue(String propertyType, String propertyName, Object propertyValue) {
-        addPropertyValue(new PropertyValue(propertyType, propertyName, propertyValue));
+        addPropertyValue(propertyType,propertyName,propertyValue);
     }
 
 
