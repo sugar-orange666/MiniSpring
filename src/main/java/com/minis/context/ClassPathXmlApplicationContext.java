@@ -27,7 +27,6 @@ public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationE
 
 
 
-    DefaultSingletonBeanRegistry simpleBeanFactory;
 
 
     AutowireCapableBeanFactory beanFactory;
@@ -47,12 +46,19 @@ public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationE
 //        if (isRefresh) {
 //            simpleBeanFactory.refresh();
 //        }
+
+
+
         Resource res = new ClassPathXmlResource(fileName);
+//        AutowireCapableBeanFactory bf = new AutowireCapableBeanFactory();
+//        AutowireCapableBeanFactory bf = new AutowireCapableBeanFactory();
         AutowireCapableBeanFactory bf = new AutowireCapableBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(bf);
         reader.loadBeanDefinitions(res);
 
         this.beanFactory = bf;
+
+
 
         if (isRefresh) {
             try {
@@ -63,6 +69,9 @@ public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationE
                 e.printStackTrace();
             }
         }
+
+        reader.loadBeanDefinitions(res);
+
     }
 
 

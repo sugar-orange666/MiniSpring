@@ -17,7 +17,7 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
         
         Object result=bean;
         Class<?> clazz = result.getClass();
-        Field[] fields = clazz.getFields();
+        Field[] fields = clazz.getDeclaredFields();
         if (fields!=null)
         {
             for (Field field : fields) {

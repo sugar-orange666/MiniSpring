@@ -5,6 +5,7 @@ import com.minis.beans.factory.annotation.Autowired;
 import com.minis.context.ClassPathXmlApplicationContext;
 import com.minis.test.AService;
 import com.minis.test.BaseBaseService;
+import com.minis.test.BaseService;
 
 import javax.annotation.Resource;
 
@@ -15,16 +16,18 @@ import javax.annotation.Resource;
 public class Test1 {
 
 
-    @Autowired
-    private static BaseBaseService bbs;
+//    @Autowired
+//    private static BaseBaseService bbs;
 
 
     public static void main(String[] args) throws Exception {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml", true);
-//        AService aService = (AService) ctx.getBean("aservice");
-//        aService.sayHello();
+        BaseService baseService = (BaseService) ctx.getBean("baseservice");
+////        aService.sayHello();
+//
+//        baseBaseService.sayHello();
 
-        bbs.sayHello();
+        baseService.sayHello();
     }
 
 //    public static void main(String[] args) {
