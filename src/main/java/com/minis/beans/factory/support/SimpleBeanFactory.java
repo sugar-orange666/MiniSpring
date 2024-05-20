@@ -2,7 +2,7 @@ package com.minis.beans.factory.support;
 
 import com.minis.beans.factory.config.ConstructorArgumentValue;
 import com.minis.beans.factory.config.ConstructorArgumentValues;
-import com.minis.beans.BeanFactory;
+import com.minis.beans.factory.BeanFactory;
 import com.minis.beans.BeansException;
 import com.minis.beans.PropertyValue;
 import com.minis.beans.PropertyValues;
@@ -69,7 +69,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
         return containsSingleton(name);
     }
 
-    @Override
+
     public void registerBean(String name, Object obj) {
         registerSingleton(name, obj);
     }

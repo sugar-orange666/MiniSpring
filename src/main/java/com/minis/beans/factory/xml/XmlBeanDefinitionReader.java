@@ -1,15 +1,11 @@
 package com.minis.beans.factory.xml;
 
-import com.minis.beans.BeanFactory;
-import com.minis.beans.factory.config.AutowireCapableBeanFactory;
 import com.minis.beans.factory.config.ConstructorArgumentValue;
 import com.minis.beans.factory.config.ConstructorArgumentValues;
 import com.minis.beans.factory.config.BeanDefinition;
 import com.minis.beans.PropertyValue;
 import com.minis.beans.PropertyValues;
 import com.minis.beans.factory.support.AbstractBeanFactory;
-import com.minis.beans.factory.support.DefaultSingletonBeanRegistry;
-import com.minis.beans.factory.support.SimpleBeanFactory;
 import com.minis.core.Resource;
 import org.dom4j.Element;
 

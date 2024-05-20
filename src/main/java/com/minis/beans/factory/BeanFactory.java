@@ -1,4 +1,4 @@
-package com.minis.beans;
+package com.minis.beans.factory;
 
 /**
  * @Date：2024/3/16 10:08
@@ -7,7 +7,6 @@ package com.minis.beans;
 public interface BeanFactory {
     Object getBean(String beanName) throws Exception;
 
-    void registerBean(String beanName, Object obj);
 
 
     boolean containsBean(String name);

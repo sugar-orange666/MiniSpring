@@ -1,6 +1,6 @@
 package com.minis.beans.factory.support;
 
-import com.minis.beans.BeanFactory;
+import com.minis.beans.factory.BeanFactory;
 import com.minis.beans.BeansException;
 import com.minis.beans.PropertyValue;
 import com.minis.beans.PropertyValues;
@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory, BeanDefinitionRegistry {
 
     //一级缓存
-    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
-    private List<String> beanDefinitionNames = new ArrayList<>();
+    protected Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
+    protected List<String> beanDefinitionNames = new ArrayList<>();
     //二级缓存
     private final Map<String, Object> earlySingletonObjects = new HashMap<String, Object>(16);
 

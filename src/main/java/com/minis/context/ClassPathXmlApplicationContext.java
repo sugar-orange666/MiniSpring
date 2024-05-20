@@ -1,141 +1,98 @@
 package com.minis.context;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.minis.beans.BeansException;
 import com.minis.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
-import com.minis.beans.factory.config.AutowireCapableBeanFactory;
-import com.minis.beans.factory.config.BeanDefinition;
-import com.minis.beans.BeanFactory;
+import com.minis.beans.factory.config.AbstractAutowireCapableBeanFactory;
 import com.minis.beans.factory.config.BeanFactoryPostProcessor;
-import com.minis.beans.factory.support.DefaultSingletonBeanRegistry;
-import com.minis.beans.factory.support.SimpleBeanFactory;
+import com.minis.beans.factory.config.BeanPostProcessor;
+import com.minis.beans.factory.config.ConfigurableListableBeanFactory;
+import com.minis.beans.factory.support.DefaultListableBeanFactory;
 import com.minis.beans.factory.xml.XmlBeanDefinitionReader;
 import com.minis.core.ClassPathXmlResource;
 import com.minis.core.Resource;
+import com.minis.core.env.Environment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * 1.加载xml文件
- * 2. 把bean读出来，放入beanFactory
- * 3. 从factory中获取bean
- *
- * @Date：2024/3/12 19:02
- * @Description
- */
-public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationEventPublisher {
-
-
-
-
-
-    AutowireCapableBeanFactory beanFactory;
-    private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors =
-            new ArrayList<BeanFactoryPostProcessor>();
-
+public class ClassPathXmlApplicationContext extends AbstractApplicationContext{
+	DefaultListableBeanFactory beanFactory;
+	private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors =
+			new ArrayList<BeanFactoryPostProcessor>();	
 
     public ClassPathXmlApplicationContext(String fileName){
-        this(fileName, true);
+    	this(fileName, true);
     }
 
-    public ClassPathXmlApplicationContext(String fileName, boolean isRefresh) {
-//        Resource resource = new ClassPathXmlResource(fileName);
-//        simpleBeanFactory = new AutowireCapableBeanFactory();
-//        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(simpleBeanFactory);
-//        reader.loadBeanDefinitions(resource);
-//        if (isRefresh) {
-//            simpleBeanFactory.refresh();
-//        }
-
-
-
-        Resource res = new ClassPathXmlResource(fileName);
-//        AutowireCapableBeanFactory bf = new AutowireCapableBeanFactory();
-//        AutowireCapableBeanFactory bf = new AutowireCapableBeanFactory();
-        AutowireCapableBeanFactory bf = new AutowireCapableBeanFactory();
+    public ClassPathXmlApplicationContext(String fileName, boolean isRefresh){
+    	Resource res = new ClassPathXmlResource(fileName);
+    	DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(bf);
         reader.loadBeanDefinitions(res);
-
+        
         this.beanFactory = bf;
-
-
-
+        
         if (isRefresh) {
             try {
-                refresh();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (BeansException e) {
-                e.printStackTrace();
-            }
+				refresh();
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (BeansException e) {
+				e.printStackTrace();
+			}
         }
-
-        reader.loadBeanDefinitions(res);
-
     }
 
+	@Override
+	void registerListeners() {
+		ApplicationListener listener = new ApplicationListener();
+		this.getApplicationEventPublisher().addApplicationListener(listener);
+	
+	}
 
-    @Override
-    public Object getBean(String beanName) throws Exception {
-        return this.beanFactory.getBean(beanName);
-    }
+	@Override
+	void initApplicationEventPublisher() {
+		ApplicationEventPublisher aep = new SimpleApplicationEventPublisher();
+		this.setApplicationEventPublisher(aep);
+	}
 
-    @Override
-    public boolean containsBean(String name) {
-        return this.beanFactory.containsBean(name);
-    }
+	@Override
+	void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
+	}
 
-    public void registerBean(String beanName, Object obj) {
-        this.beanFactory.registerBean(beanName, obj);
-    }
+	@Override
+	void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
+		this.beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
+	}
 
-    @Override
-    public void publishEvent(ApplicationEvent event) {
-    }
+	@Override
+	void onRefresh() {
+		this.beanFactory.refresh();
+	}
 
-    @Override
-    public boolean isSingleton(String name) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	@Override
+	public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
+		return this.beanFactory;
+	}
 
-    @Override
-    public boolean isPrototype(String name) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	@Override
+	public void addApplicationListener(ApplicationListener listener) {
+		this.getApplicationEventPublisher().addApplicationListener(listener);
+		
+	}
 
-    @Override
-    public Class<?> getType(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	void finishRefresh() {
+		publishEvent(new ContextRefreshEvent("Context Refreshed..."));
+		
+	}
 
-    public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
-        return this.beanFactoryPostProcessors;
-    }
-
-    public void addBeanFactoryPostProcessor(BeanFactoryPostProcessor postProcessor) {
-        this.beanFactoryPostProcessors.add(postProcessor);
-    }
-
-    public void refresh() throws BeansException, IllegalStateException {
-        // Register bean processors that intercept bean creation.
-        registerBeanPostProcessors(this.beanFactory);
-
-        // Initialize other special beans in specific context subclasses.
-        onRefresh();
-    }
-
-    private void registerBeanPostProcessors(AutowireCapableBeanFactory bf) {
-        //if (supportAutowire) {
-        bf.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
-        //}
-    }
-
-    private void onRefresh() {
-        this.beanFactory.refresh();
-    }
-
-
+	@Override
+	public void publishEvent(ApplicationEvent event) {
+		this.getApplicationEventPublisher().publishEvent(event);
+		
+	}
+   
+    
 }
