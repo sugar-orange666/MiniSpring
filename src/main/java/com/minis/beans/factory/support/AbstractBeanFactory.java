@@ -4,6 +4,7 @@ import com.minis.beans.factory.BeanFactory;
 import com.minis.beans.BeansException;
 import com.minis.beans.PropertyValue;
 import com.minis.beans.PropertyValues;
+import com.minis.beans.factory.BeanFactoryAware;
 import com.minis.beans.factory.config.BeanDefinition;
 import com.minis.beans.factory.config.ConstructorArgumentValue;
 import com.minis.beans.factory.config.ConstructorArgumentValues;
@@ -54,6 +55,10 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 BeanDefinition bd = beanDefinitionMap.get(beanName);
                 singleton=createBean(bd);
                 this.registerBean(beanName, singleton);
+
+                if (singleton instanceof BeanFactoryAware) {
+                    ((BeanFactoryAware) singleton).setBeanFactory(this);
+                }
 
                 //beanpostprocessor
                 //step 1 : postProcessBeforeInitialization
